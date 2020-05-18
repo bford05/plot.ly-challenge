@@ -5,21 +5,23 @@ function init (i) {
     const belly = "samples.json";
     d3.json(belly).then(function(data){   //Read in samples.json file containing data
         var testSubNames = data.names;    //Define variables that will be called later for building charts and for demographic info table
+        console.log(testSubNames);
         var sampleValues = data.samples[i].sample_values; //Use i as iterator to retrieve all values within samples array for sample values
         console.log(sampleValues);
         var otuIDs = data.samples[i].otu_ids;
         console.log(otuIDs);
-        var otuIDStr = otuIDs.map(d => "OTU" + d); //Convert OTU IDs to OTU string to add to the horizontal bar chart
+        var otuIDStr = otuIDs.map(d => "OTU" + d); //Add OTU identifier and convert to string so that we can add to bar chart later
         console.log(otuIDStr); 
         var otuLabels = data.samples[i].otu_labels;
         console.log(otuLabels);
 
         // Define Dropdown for demographic panel and add test subject ids as values to the list
-        var panelDropdown = d3.select("selDataset")
+        var panelDropdown = d3.select("#selDataset")
         for (i in testSubNames) {
-            var newPanelDropdown = panelDropdown.append("option")
-            newPanelDropdown.text(testSubNames[i]);
+            var newPanelDropdownOption = panelDropdown.append("option")
+            newPanelDropdownOption.text(testSubNames[i]);
         }
+        
     
         // Define variable containing metadata info for table
         // Clear panel prior to selecting new test subject ID
@@ -29,8 +31,8 @@ function init (i) {
         var mdPanel = d3.select("#sample-metadata");
         mdPanel.html("");  
         Object.entries(panelMetadata).forEach(function ([key, value]) {
-            var text = key + ":" + value;
-            mdPanel.append("p").text(text);
+            var row = mdPanel.append("p");
+            row.text(`${key.toUpperCase()} :${value}`)
         
         })
 
@@ -83,25 +85,29 @@ function init (i) {
 
         Plotly.newPlot('bubble', bubbleData, layout);
 
-        });
+    })
       
 }
 
-// Define function for changing options in the metadata panel
+// Define function for updating data on page
 // Pass parameter element--when option is changed to a new subject id,
-// display values for that subject id 
+// display values for that subject id
+// partnered with classmate to code (Kaylee)
 
-function optionsChange(d) {
-    console.log("option changed function");
+function optionChanged(d) {
+    const belly = "samples.json";
+    d3.json(belly).then(function(data){ 
+        var testSubNames = data.names;
     const isNumber = (element) => element === d;
-    var idx = (testSubNames.findIndex(isNumber));
+    var indx = (testSubNames.findIndex(isNumber));
     d3.selectAll("td").remove();
     d3.selectAll("option").remove();
-    var mdPanel = d3.select("selDataset")
-    mdPanel.append("option").text(d);
-    init(idx);
-}
+    var panelDropdown = d3.select("#selDataset")
+    panelDropdown.append("option").text(d);
+    init(indx);
 
+});
+}
  init(0);
 
 
