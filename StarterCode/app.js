@@ -14,6 +14,8 @@ function init (i) {
         console.log(otuIDStr); 
         var otuLabels = data.samples[i].otu_labels;
         console.log(otuLabels);
+        var panelMetadata = data.metadata[i];
+        console.log(panelMetadata);
 
         // Define Dropdown for demographic panel and add test subject ids as values to the list
         var panelDropdown = d3.select("#selDataset")
@@ -23,11 +25,10 @@ function init (i) {
         }
         
     
-        // Define variable containing metadata info for table
+        // Select id associated with metadata from html
         // Clear panel prior to selecting new test subject ID
         // Return key:value pair elements from metadata array and append to table
 
-        var panelMetadata = data.metadata[i];
         var mdPanel = d3.select("#sample-metadata");
         mdPanel.html("");  
         Object.entries(panelMetadata).forEach(function ([key, value]) {
@@ -97,7 +98,7 @@ function init (i) {
 function optionChanged(d) {
     const belly = "samples.json";
     d3.json(belly).then(function(data){ 
-        var testSubNames = data.names;
+    var testSubNames = data.names;
     const isNumber = (element) => element === d;
     var indx = (testSubNames.findIndex(isNumber));
     d3.selectAll("td").remove();
